@@ -6,16 +6,35 @@ import { addCommands } from '../defaultCommands';
 Discord; // eslint bein a DUMBASS
 Command;
 
+/**
+ * Represents the commands and options of a single bot
+ */
 export class System {
-  public prefix: string = '!';
+	 /** The prefix used for detecting commands */
+	public prefix: string = '!';
+	 /** The client of the command system */
   public client: Discord.Client;
 
+	 /** An object of categories, each containing commands */
   public commands: any = {};
 
+	 /** The client application of the client, only used to get the owner ID */
   private application: Discord.ClientApplication | undefined;
 
+	 /** The ID of the bot owner */
   public ownerID: string | undefined;
 
+	 /**
+	 * Makes a new command system with no commands except the default commands (ping, help)
+   * @example
+   * const Discord = require('discord.js');
+   * const CommandSystem = require('cumsystem');
+   * 
+   * const client = new Discord.Client();
+   * const cs = new CommandSystem.System(client, '!');
+	 * @param {Discord.Client} client The client of the command system
+	 * @param {string} prefix The prefix to use for command detection
+	 */
   constructor(client: Discord.Client, prefix: string) {
   	this.client = client;
   	this.prefix = prefix;
@@ -35,9 +54,13 @@ export class System {
   }
 
   /**
-   * add a command to the commands list
-   * @param {string} category the name of the category to use
-   * @param {Command} command the command itself
+   * Add a command to the commands list
+	 * @example
+	 * cs.addCommand('core', new CommandSystem.SimpleCommand('hi', () => {
+   *   return 'hello!';
+	 * }));
+   * @param {string} category The name of the category to use
+   * @param {Command} command The command itself
    */
   public addCommand(category: string, command: Command): void {
   	if (!this.commands[category]) {
@@ -48,16 +71,16 @@ export class System {
   }
 
   /**
-   * sets a client for the library to use
-   * @param {Discord.Client} clientSet the client
+   * Sets a client for the command system to use
+   * @param {Discord.Client} clientSet The client
    */
   public setClient(clientSet: Discord.Client) {
   	this.client = clientSet;
   }
 
   /**
-   * sets a prefix for the library to use
-   * @param {string} prefixSet the prefix
+   * Sets a prefix for the command system to use
+   * @param {string} prefixSet The prefix
    */
   public setPrefix(prefixSet: string) {
   	this.prefix = prefixSet;
@@ -65,8 +88,8 @@ export class System {
 
   /**
    * Parses messages, recommended to put in your client message listener
-   * @param {Discord.Message} message the message
-   * @param {string} prefixOverride a prefix override to use instead of the default one, useful for custom prefixes
+   * @param {Discord.Message} message The message
+   * @param {string} prefixOverride A prefix override to use instead of the default one, useful for custom prefixes
    */
   public parseMessage(message: Discord.Message, prefixOverride?: string) {
   	let content: string = message.content;

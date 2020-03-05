@@ -1,8 +1,11 @@
 import * as Discord from 'discord.js';
 
-import * as util from './util';
-
 import * as CommandSystem from './index';
+
+function grammar(str: string) : string {
+	const newstring = str.slice(1, str.length);
+	return str[0].toUpperCase() + newstring;
+}
 
 export function addCommands(cs: CommandSystem.System) {
 	cs.addCommand('core', new CommandSystem.SimpleCommand('help', (message) => {
@@ -30,7 +33,7 @@ export function addCommands(cs: CommandSystem.System) {
 			// @ts-ignore
 			if (command) {
 				let embed = new Discord.MessageEmbed()
-					.setTitle(`**${util.grammar(command.name)}** (${util.grammar(categoryName)})`)
+					.setTitle(`**${grammar(command.name)}** (${grammar(categoryName)})`)
 					.addField('Usage', cs.prefix + command.name + ' ' + command.displayUsage)
 					.setDescription(command.description)
 					.setColor(Math.floor(Math.random() * 16777215));
@@ -58,7 +61,7 @@ export function addCommands(cs: CommandSystem.System) {
 				// @ts-ignore
 				if (category) {
 					const embed = new Discord.MessageEmbed()
-						.setTitle(`**${util.grammar(categoryName)}** [${Object.keys(category).length}]`)
+						.setTitle(`**${grammar(categoryName)}** [${Object.keys(category).length}]`)
 						.setColor(Math.floor(Math.random() * 16777215));
 
 					const commands: string[] = [];
@@ -90,7 +93,7 @@ export function addCommands(cs: CommandSystem.System) {
 					if (!cmd.hidden) commands.push(cmd.name);
 				});
 
-				if (commands.length !== 0) embed.addField(`${util.grammar(categoryName)} [${commands.length}]`, '`' + commands.join('`, `') + '`');
+				if (commands.length !== 0) embed.addField(`${grammar(categoryName)} [${commands.length}]`, '`' + commands.join('`, `') + '`');
 			});
 
 			return {embed};

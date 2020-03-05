@@ -1,45 +1,125 @@
 import * as Discord from 'discord.js';
-import * as util from '../util';
 import { System } from './System';
 
 System; // eslint .. ./.,,,, ,
 
+function parseUser(bot : Discord.Client, parse : string, guild? : Discord.Guild) : Discord.User | null {
+	if(parse.startsWith('<@') && parse.startsWith('>')) {
+		parse = parse.substr(2, parse.length-3);
+	}
+
+	if(!isNaN(Number(parse))) {
+		let user = bot.users.cache.get(parse);
+		if (user !== undefined)
+			return user;
+	} else {
+		if (parse.split('#').length === 2) {
+			let name = parse.split('#')[0];
+			let discrim = parse.split('#')[1];
+			let users = bot.users.cache.filter(u => u.username === name && u.discriminator === discrim);
+	
+			if (users.size === 1) {
+				return users.first() || null;
+			}
+		}
+
+		if (guild) {
+			let users = guild.members.cache.filter(u => u.nickname !== null && u.nickname.toLowerCase().startsWith(parse.toLowerCase()));
+			if (users.size > 0) {
+				let user = users.first();
+				if (user)
+					return user.user;
+			}
+
+			users = guild.members.cache.filter(u => u.nickname !== null && u.nickname.toLowerCase() === parse.toLowerCase());
+			if (users.size > 0) {
+				let user = users.first();
+				if (user)
+					return user.user;
+			}
+
+			users = guild.members.cache.filter(u => u.user.username.toLowerCase() === parse.toLowerCase());
+			if (users.size > 0) {
+				let user = users.first();
+				if (user)
+					return user.user;
+			}
+
+			users = guild.members.cache.filter(u => u.user.username.toLowerCase().startsWith(parse.toLowerCase()));
+			if (users.size > 0) {
+				let user = users.first();
+				if (user)
+					return user.user;
+			}
+		}
+	}
+
+	return null;
+}
+
 /**
- * represents a command the bot can run (for example, a help command)
+ * Represents a command the bot can run (for example, a help command)
+ *
+ * `content` is a variable that is the message's content without the prefix. For example:
+ * 
+ * `msg.content`: `!say abcdefg aa aa`
+ * 
+ * `content`: `abcdefg aa aa`
  */
 export class Command {
+	/** The name of the command, also what the command uses to be invoked */
 	public name: string;
+	/** The function to run when the command is invoked */
 	public cfunc: (message: Discord.Message, content: string) => any | undefined;
+	/** A description of the command; shows up in the help command */
 	public description: string;
 
+	/** The usage of the command. Used for checking the syntax */
 	public usage: string;
+	/** The usage of the command, but only used for the help command */
 	public displayUsage: string;
 
+	/** An array of permissions the client needs to run the command */
 	public clientPermissions: Discord.PermissionResolvable[];
+	/** An array of permissions the user needs to invoke the command */
 	public userPermissions: Discord.PermissionResolvable[];
+	/** The command can only be ran in a DM */
 	public needsDM: boolean;
+	/** The command can only be ran in a guild/server */
 	public needsGuild: boolean;
 
+	/** The comand wont show up in the help commands */
 	public hidden: boolean;
+	/** The command can only be ran by the owner */
 	public ownerOnly: boolean;
+	/** The command will ignore prefix overrides */
 	public ignorePrefix: boolean;
-	public debugOnly: boolean;
+	/** The command can only be ran in an NSFW channel or in DMs */
 	public nsfwOnly: boolean;
 
+	/** An array of alternative names that can be used to invoke the command */
 	public aliases: string[];
+	/** An array of example usages of the command. Only show up in help */
 	public examples: string[];
 
+	/** The function used to check the usage of the command, will use the default one if not provided */
 	public usageCheck: ((content: string) => boolean) | undefined;
 
+	/** Amount of ms until anyone can use the command since it was last used */
 	public globalCooldown: number;
+	/** Amount of ms until a user can use the command again */
 	public userCooldown: number;
 	private globalCooldowns: number = 0;
 	private userCooldowns: any = {};
 
 	/**
-	 * create a command
-	 * @param {string} name the name, also what invokes the command
-	 * @param {function} cfunction the function to run after the command is ran
+	 * Create a command
+	 * @example
+	 * let command = new CommandSystem.Command('test', msg => {
+	 *  msg.channel.send('Testing!');
+	 * });
+	 * @param {string} name The name, also what invokes the command
+	 * @param {function} cfunction The function to run after the command is ran
 	 */
 	constructor(name : string, cfunction : (message: Discord.Message, content: string) => any | null) {
 		this.name = name;
@@ -54,7 +134,6 @@ export class Command {
 
 		this.hidden = false;
 		this.ignorePrefix = false;
-		this.debugOnly = false;
 		this.ownerOnly = false;
 		this.nsfwOnly = false;
 
@@ -70,58 +149,83 @@ export class Command {
 	}
 
 	/**
-	 * change the command name
-	 * @param {string} name the name to use for the command
+	 * Change the command name
+	 * @param {string} name The name to use for the command
+	 * @returns {Command} Itself
 	 */
-	public setName(name : string) {
+	public setName(name : string) : Command {
 		this.name = name;
 		return this;
 	}
 
 	/**
-	 * changes the usage for parsing the command
-	 * ex. usage: (string) (number) [any]
+	 * Sets the usage of the command. Will be used for checking the syntax!!, use `Command#setDisplayUsage` to set a display usage.
+   *
+	 * Types available:
+   * - `user`
+   * - `number`
+   * - `id`
+   * - `url`
+   * - `string` / `any`
+   *
+   * @example
+	 * new Command('', message => {
+   *  message.channel.send('usage test passed!');
+   * })
+   *  .setUsage('(string) (number) (user)')
+   *  .setDisplayUsage('(parameter 1) (parameter 2) (parameter 3)');
 	 * @param {string} usage the usage, use () for necessary and [] for optional arguments
+	 * @returns {Command} Itself
 	 */
-	public setUsage(usage : string) {
+	public setUsage(usage : string) : Command {
 		this.usage = usage;
 		this.displayUsage = usage;
 		return this;
 	}
 
 	/**
-	 * changes the usage in the help command. isnt parsed
+	 * Changes the usage in the help command. Isn't parsed
 	 * @param {string} usage the usage
+	 * @returns {Command} Itself
 	 */
-	public setDisplayUsage(usage : string) {
+	public setDisplayUsage(usage : string) : Command {
 		this.displayUsage = usage;
 		return this;
 	}
 
 	/**
-	 * add an example usage to the command
-	 * ex: 20 text
+	 * Add an example usage to the command
+	 * @example
+	 * new Command('', message => {
+   *  message.channel.send('usage test passed!');
+   * })
+   *  .setUsage('(string) (number) (user)')
+   *  .setDisplayUsage('(parameter 1) (parameter 2) (parameter 3)')
+	 *  .addExample('text 1 551929694019256333');
 	 * @param {string} example an example usage of the command
+	 * @returns {Command} Itself
 	 */
-	public addExample(example : string) {
+	public addExample(example : string) : Command {
 		this.examples.push(example);
 		return this;
 	}
 
 	/**
-	 * adds an alias which the command can be invoked with
+	 * Adds an alias which the command can be invoked with
 	 * @param {string} alias the name of the alias
+	 * @returns {Command} Itself
 	 */
-	public addAlias(alias : string) {
+	public addAlias(alias : string) : Command {
 		this.aliases.push(alias);
 		return this;
 	}
 
 	/**
-	 * adds aliases which the command can be invoked with
+	 * Adds aliases which the command can be invoked with
 	 * @param {string[]} aliases an array of alias names
+	 * @returns {Command} Itself
 	 */
-	public addAliases(aliases : string[]) {
+	public addAliases(aliases : string[]) : Command {
 		aliases.forEach((alias) => {
 			this.addAlias(alias);
 		});
@@ -129,64 +233,71 @@ export class Command {
 	}
 
 	/**
-	 * sets the command's decription, display only
+	 * Sets the command's decription, display only
 	 * @param {string} desc the description, leave empty to remove
+	 * @returns {Command} Itself
 	 */
-	public setDescription(desc? : string) {
+	public setDescription(desc? : string) : Command {
 		this.description = desc === undefined ? 'No description provided' : desc;
 		return this;
 	}
 
 	/**
-	 * change the command's visibility in the help command
+	 * Change the command's visibility in the help command
 	 * @param {boolean} hide
+	 * @returns {Command} Itself
 	 */
-	public setHidden(hide? : boolean) {
+	public setHidden(hide? : boolean) : Command {
 		this.hidden = hide === undefined ? true : hide;
 		return this;
 	}
 
 	/**
-	 * set the command to be ran as owner only
+	 * Set the command to be ran as owner only
 	 * @param {boolean} owner 
+	 * @returns {Command} Itself
 	 */
-	public setOwnerOnly(owner? : boolean) {
+	public setOwnerOnly(owner? : boolean) : Command {
 		this.ownerOnly = owner === undefined ? true : owner;
 		return this;
 	}
 
 	/**
-	 * set whether the command is able to be ran outside dms or not
+	 * Set whether the command is able to be ran outside dms or not
 	 * @param {boolean} needs 
+	 * @returns {Command} Itself
 	 */
-	public setDMOnly(needs?: boolean) {
+	public setDMOnly(needs?: boolean) : Command {
 		this.needsDM = needs === undefined ? true : needs;
 		return this;
 	}
 
 	/**
-	 * set whether the command is able to be ran outside servers or not
+	 * Set whether the command is able to be ran outside servers or not
 	 * @param {boolean} needs 
+	 * @returns {Command} Itself
 	 */
-	public setGuildOnly(needs?: boolean) {
+	public setGuildOnly(needs?: boolean) : Command {
 		this.needsGuild = needs === undefined ? true : needs;
 		return this;
 	}
 
 	/**
-	 * set whether the command needs an nsfw channel to run
+	 * Set whether the command can only be ran in an NSFW channel or a DM
 	 * @param {boolean} needs 
+	 * @returns {Command} Itself
 	 */
-	public setNSFW(needs?: boolean) {
+	public setNSFW(needs?: boolean) : Command {
 		this.nsfwOnly = needs === undefined ? true : needs;
 		return this;
 	}
 
 	/**
-	 * set whether the command ignores any given custom prefixes (only really useful for commands that change the prefix)
+	 * Set whether the command ignores any given custom prefixes (only really useful for commands that change the prefix)
 	 * @param {boolean} needs
+	 * @returns {Command} Itself
 	 */
-	public setIgnorePrefix(needs?: boolean) {
+	public setIgnorePrefix(needs?: boolean) : Command {
 		this.ignorePrefix = needs === undefined ? true : needs;
 		return this;
 	}
@@ -194,8 +305,9 @@ export class Command {
 	/**
 	 * add a permission required for the client to run the command
 	 * @param {Discord.PermissionResolvable} perm the permission to add
+	 * @returns {Command} Itself
 	 */
-	public addClientPermission(perm: Discord.PermissionResolvable) {
+	public addClientPermission(perm: Discord.PermissionResolvable) : Command {
 		if (Object.keys(Discord.Permissions.FLAGS).includes(perm.toString())) {
 			this.clientPermissions.push(perm);
 		} else {
@@ -207,8 +319,9 @@ export class Command {
 	/**
 	 * add a permission required for the user to invoke the command
 	 * @param {Discord.PermissionResolvable} perm the permission to add
+	 * @returns {Command} Itself
 	 */
-	public addUserPermission(perm: Discord.PermissionResolvable) {
+	public addUserPermission(perm: Discord.PermissionResolvable) : Command {
 		if (Object.keys(Discord.Permissions.FLAGS).includes(perm.toString())) {
 			this.userPermissions.push(perm);
 		} else {
@@ -220,8 +333,9 @@ export class Command {
 	/**
 	 * add multiple permissions required for the client to run the command
 	 * @param {Discord.PermissionResolvable[]} perms an array of permissions to add
+	 * @returns {Command} Itself
 	 */
-	public addClientPermissions(perms: Discord.PermissionResolvable[]) {
+	public addClientPermissions(perms: Discord.PermissionResolvable[]) : Command {
 		perms.forEach((perm) => {
 			this.addClientPermission(perm);
 		});
@@ -232,8 +346,9 @@ export class Command {
 	/**
 	 * add multiple permissions required for the user to invoke the command
 	 * @param {Discord.PermissionResolvable[]} perms an array of permissions to add
+	 * @returns {Command} Itself
 	 */
-	public addUserPermissions(perms: Discord.PermissionResolvable[]) {
+	public addUserPermissions(perms: Discord.PermissionResolvable[]) : Command {
 		perms.forEach((perm) => {
 			this.addUserPermission(perm);
 		});
@@ -242,19 +357,21 @@ export class Command {
 	}
 
 	/**
-	 * set a per-user cooldown on the command to prevent it from being spammed
+	 * Set a per-user cooldown on the command to prevent it from being spammed
 	 * @param {number} time the cooldown in ms
+	 * @returns {Command} Itself
 	 */
-	public setUserCooldown(time : number) {
+	public setUserCooldown(time : number) : Command {
 		this.userCooldown = time;
 		return this;
 	}
 
 	/**
-	 * set a global cooldown on the command to prevent it from being spammed
+	 * Set a global cooldown on the command to prevent it from being spammed
 	 * @param {number} time the cooldown in ms
+	 * @returns {Command} Itself
 	 */
-	public setGlobalCooldown(time : number) {
+	public setGlobalCooldown(time : number) : Command {
 		this.globalCooldown = time;
 		return this;
 	}
@@ -265,7 +382,7 @@ export class Command {
 	 * @param {Discord.Client} client the client of the bot that recieved the command
 	 */
 	public runCommand(message: Discord.Message, system: System) {
-		const params = util.getParams(message);
+		const params = message.content.split(' ').slice(1);
 
 		if (this.ownerOnly && message.author.id !== system.ownerID)
 			return message.channel.send('This command can only be ran by the owner!');
@@ -317,7 +434,7 @@ export class Command {
 						argumentsValid[i] = true;
 						break;
 					case 'user':
-						argumentsValid[i] = util.parseUser(message.client, params[i], message.guild === null ? undefined : message.guild) !== null;
+						argumentsValid[i] = parseUser(message.client, params[i], message.guild === null ? undefined : message.guild) !== null;
 						break;
 					case 'url':
 						argumentsValid[i] = params[i].startsWith('http://') || params[i].startsWith('https://');

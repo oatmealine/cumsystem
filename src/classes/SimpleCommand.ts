@@ -4,16 +4,20 @@ import { Command } from './Command';
 Discord; // eslint .......
 
 /**
- * a command the function of which returns the message to sent back
+ * A command the function of which returns the message to send back
  * @extends Command
  */
 export class SimpleCommand extends Command {
 	/**
-	 * create a command
-	 * @param {string} name the name, also what invokes the command
-	 * @param {Function} cfunction the function to run after the command is ran, returns a string that will be sent back to the user
+	 * Create a command
+ 	 * @example
+ 	 * let command = new CommandSystem.SimpleCommand('test', () => {
+ 	 *  return 'Testing!';
+ 	 * });
+	 * @param {string} name The name, also what invokes the command
+	 * @param {Function} cfunction The function to run after the command is ran, returns content that will be sent back to the user, or a promise that returns the content
 	 */
-	constructor(name: string, cfunction: (message: Discord.Message, content: string) => any | undefined) {
+	constructor(name: string, cfunction: (message: Discord.Message, content: string) => any | Promise<any> | undefined) {
 		super(name, cfunction);
 
 		this.cfunc = (message, content) => {
