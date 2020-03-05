@@ -1,6 +1,6 @@
 {
   "name": "cumsystem",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "simple command system and command handler",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
