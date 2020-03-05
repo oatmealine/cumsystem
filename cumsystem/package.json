@@ -1,0 +1,30 @@
+{
+  "name": "cumsystem",
+  "version": "1.0.0",
+  "description": "simple command system and command handler",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "@types/node": "^13.7.7",
+    "@types/ws": "^7.2.2",
+    "discord.js": "^12.0.1",
+    "typescript": "^3.8.3"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.22.0",
+    "@typescript-eslint/parser": "^2.22.0",
+    "eslint": "^6.8.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "lint": "eslint src/**/*.ts"
+  },
+  "keywords": [
+    "discord.js",
+    "discord",
+    "command-system"
+  ],
+  "author": "oatmealine",
+  "license": "MIT"
+}
