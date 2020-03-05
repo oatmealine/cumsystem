@@ -115,9 +115,11 @@ export class Command {
 	/**
 	 * Create a command
 	 * @example
+	 * ```typescript
 	 * let command = new CommandSystem.Command('test', msg => {
 	 *  msg.channel.send('Testing!');
 	 * });
+	 * ```
 	 * @param {string} name The name, also what invokes the command
 	 * @param {function} cfunction The function to run after the command is ran
 	 */
@@ -169,11 +171,13 @@ export class Command {
    * - `string` / `any`
    *
    * @example
+	 * ```typescript
 	 * new Command('', message => {
    *  message.channel.send('usage test passed!');
    * })
    *  .setUsage('(string) (number) (user)')
    *  .setDisplayUsage('(parameter 1) (parameter 2) (parameter 3)');
+	 * ```
 	 * @param {string} usage the usage, use () for necessary and [] for optional arguments
 	 * @returns {Command} Itself
 	 */
@@ -196,12 +200,14 @@ export class Command {
 	/**
 	 * Add an example usage to the command
 	 * @example
+	 * ```typescript
 	 * new Command('', message => {
    *  message.channel.send('usage test passed!');
    * })
    *  .setUsage('(string) (number) (user)')
    *  .setDisplayUsage('(parameter 1) (parameter 2) (parameter 3)')
 	 *  .addExample('text 1 551929694019256333');
+	 * ```
 	 * @param {string} example an example usage of the command
 	 * @returns {Command} Itself
 	 */
@@ -303,8 +309,8 @@ export class Command {
 	}
 
 	/**
-	 * add a permission required for the client to run the command
-	 * @param {Discord.PermissionResolvable} perm the permission to add
+	 * Add a permission required for the client to run the command
+	 * @param {Discord.PermissionResolvable} perm The permission to add
 	 * @returns {Command} Itself
 	 */
 	public addClientPermission(perm: Discord.PermissionResolvable) : Command {

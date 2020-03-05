@@ -27,11 +27,13 @@ export class System {
 	 /**
 	 * Makes a new command system with no commands except the default commands (ping, help)
    * @example
+	 * ```typescript
    * const Discord = require('discord.js');
    * const CommandSystem = require('cumsystem');
    * 
    * const client = new Discord.Client();
    * const cs = new CommandSystem.System(client, '!');
+	 * ```
 	 * @param {Discord.Client} client The client of the command system
 	 * @param {string} prefix The prefix to use for command detection
 	 */
@@ -56,9 +58,11 @@ export class System {
   /**
    * Add a command to the commands list
 	 * @example
+	 * ```typescript
 	 * cs.addCommand('core', new CommandSystem.SimpleCommand('hi', () => {
    *   return 'hello!';
 	 * }));
+	 * ```
    * @param {string} category The name of the category to use
    * @param {Command} command The command itself
    */

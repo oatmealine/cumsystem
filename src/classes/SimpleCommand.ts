@@ -11,9 +11,11 @@ export class SimpleCommand extends Command {
 	/**
 	 * Create a command
  	 * @example
+	 * ```typescript
  	 * let command = new CommandSystem.SimpleCommand('test', () => {
  	 *  return 'Testing!';
  	 * });
+	 * ```
 	 * @param {string} name The name, also what invokes the command
 	 * @param {Function} cfunction The function to run after the command is ran, returns content that will be sent back to the user, or a promise that returns the content
 	 */

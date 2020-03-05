@@ -13,12 +13,14 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.22.0",
     "@typescript-eslint/parser": "^2.22.0",
-    "eslint": "^6.8.0"
+    "eslint": "^6.8.0",
+    "typedoc": "^0.16.11"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "lint": "eslint src/**/*.ts"
+    "lint": "eslint src/**/*.ts",
+    "builddocs": "typedoc --out ./docs/ ./src/"
   },
   "keywords": [
     "discord.js",

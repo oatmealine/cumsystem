@@ -1,0 +1,311 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>cumsystem</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">cumsystem</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1>cumsystem</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#cumsystem" id="cumsystem" style="color: inherit; text-decoration: none;">
+					<h1>Cumsystem</h1>
+				</a>
+				<p>A simple and powerful Discord.JS command system</p>
+				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+					<h2>Usage</h2>
+				</a>
+				<p><code>npm i cumsystem</code></p>
+				<p>or</p>
+				<p><code>npm i https://github.com/oatmealine/cumsystem</code></p>
+				<p>then</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> CommandSystem = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cumsystem'</span>);</code></pre>
+				<p>or</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> CommandSystem <span class="hljs-keyword">from</span> <span class="hljs-string">'cumsystem'</span>;</code></pre>
+				<a href="#example" id="example" style="color: inherit; text-decoration: none;">
+					<h3>Example</h3>
+				</a>
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> Discord = <span class="hljs-built_in">require</span>(<span class="hljs-string">'discord.js'</span>);
+<span class="hljs-keyword">const</span> CommandSystem = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cumsystem'</span>);
+
+<span class="hljs-keyword">let</span> client = <span class="hljs-keyword">new</span> Discord.Client();
+<span class="hljs-keyword">let</span> cs = <span class="hljs-keyword">new</span> CommandSystem.System(client, <span class="hljs-string">'!'</span>); <span class="hljs-comment">// set the prefix</span>
+
+client.on(<span class="hljs-string">'message'</span>, <span class="hljs-function"><span class="hljs-params">m</span> =&gt;</span> cs.parseMessage(m)); <span class="hljs-comment">// arrow functions are required!!!!</span>
+client.on(<span class="hljs-string">'ready'</span>, <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'ready!'</span>));
+
+cs.addCommand(<span class="hljs-string">'core'</span>, <span class="hljs-keyword">new</span> CommandSystem.SimpleCommand(<span class="hljs-string">'hi'</span>, <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">return</span> <span class="hljs-string">'hello!'</span>;
+})
+  .setDescription(<span class="hljs-string">'says hello back'</span>));
+
+cs.addCommand(<span class="hljs-string">'core'</span>, <span class="hljs-keyword">new</span> CommandSystem.SimpleCommand(<span class="hljs-string">'say'</span>, <span class="hljs-function">(<span class="hljs-params">msg, bot, content</span>) =&gt;</span> {
+  <span class="hljs-keyword">return</span> content;
+})
+  .setDescription(<span class="hljs-string">'says whatever you tell it to say'</span>)
+  .setOwnerOnly());
+
+client.login(token);</code></pre>
+				<a href="#short-documentation-incomplete-hopefully-will-be-replaced-by-an-auto-documentation-soon" id="short-documentation-incomplete-hopefully-will-be-replaced-by-an-auto-documentation-soon" style="color: inherit; text-decoration: none;">
+					<h2>Short documentation (incomplete, hopefully will be replaced by an auto-documentation soon)</h2>
+				</a>
+				<a href="#system-client--client-prefix--string-" id="system-client--client-prefix--string-" style="color: inherit; text-decoration: none;">
+					<h3>System( client : Client, prefix : string )</h3>
+				</a>
+				<p>Initializes a new command system. It&#39;s recommended to only create one per client.</p>
+				<a href="#systemaddcommand-category--string-command--command-" id="systemaddcommand-category--string-command--command-" style="color: inherit; text-decoration: none;">
+					<h4>System#addCommand( category : string, command : Command )</h4>
+				</a>
+				<p>Adds a command to the command system to a specified category. The category is created if it doesnt exist.</p>
+				<a href="#systemsetclient-client--client-" id="systemsetclient-client--client-" style="color: inherit; text-decoration: none;">
+					<h4>System#setClient( client : Client )</h4>
+				</a>
+				<p>Sets a new client to the command system.</p>
+				<a href="#systemsetprefix-prefix--string-" id="systemsetprefix-prefix--string-" style="color: inherit; text-decoration: none;">
+					<h4>System#setPrefix( prefix : string )</h4>
+				</a>
+				<p>Sets the prefix of the command system.</p>
+				<a href="#systemparsemessage-message--message-prefixoverride--string-" id="systemparsemessage-message--message-prefixoverride--string-" style="color: inherit; text-decoration: none;">
+					<h4>System#parseMessage( message : Message, prefixOverride : string )</h4>
+				</a>
+				<p>Parses messages, recommended to put in your client message listener.</p>
+				<a href="#command-name--string-cfunction--message-message-content-string-gt-any-" id="command-name--string-cfunction--message-message-content-string-gt-any-" style="color: inherit; text-decoration: none;">
+					<h3>Command( name : string, cfunction : (message: Message, content: string) =&gt; any )</h3>
+				</a>
+				<p>Represents a command. <code>cfunction</code> will be ran when the command is executed.</p>
+				<p><code>content</code> is a variable that is the message&#39;s content without the prefix. For example:</p>
+				<p><code>msg.content</code>: <code>!say abcdefg aa aa</code>
+				<code>content</code>: <code>abcdefg aa aa</code></p>
+				<a href="#commandsetname-name--string-" id="commandsetname-name--string-" style="color: inherit; text-decoration: none;">
+					<h4>Command#setName( name : string )</h4>
+				</a>
+				<a href="#commandsetusage-usage--string-" id="commandsetusage-usage--string-" style="color: inherit; text-decoration: none;">
+					<h4>Command#setUsage( usage : string )</h4>
+				</a>
+				<p>Sets the usage of the command. Will be used for checking the syntax!!, use <code>Command#setDisplayUsage</code> to set a display usage.</p>
+				<p>Types available:</p>
+				<ul>
+					<li><code>user</code></li>
+					<li><code>number</code></li>
+					<li><code>id</code></li>
+					<li><code>url</code></li>
+					<li><code>string</code> / <code>any</code></li>
+				</ul>
+				<p>Example:</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">new</span> Command(<span class="hljs-string">''</span>, <span class="hljs-function"><span class="hljs-params">message</span> =&gt;</span> {
+  message.channel.send(<span class="hljs-string">'usage test passed!'</span>);
+})
+  .setUsage(<span class="hljs-string">'(string) (number) (user)'</span>)
+  .setDisplayUsage(<span class="hljs-string">'(parameter 1) (parameter 2) (parameter 3)'</span>)</code></pre>
+				<a href="#commandsetdisplayusage-usage--string-" id="commandsetdisplayusage-usage--string-" style="color: inherit; text-decoration: none;">
+					<h4>Command#setDisplayUsage (usage : string )</h4>
+				</a>
+				<p>Check <code>Command#setUsage()</code></p>
+				<a href="#commandaddexample--example--string-" id="commandaddexample--example--string-" style="color: inherit; text-decoration: none;">
+					<h4>Command#addExample ( example : string )</h4>
+				</a>
+				<p>Adds an example usage of the command.</p>
+				<a href="#commandaddalias--alias--string-" id="commandaddalias--alias--string-" style="color: inherit; text-decoration: none;">
+					<h4>Command#addAlias ( alias : string )</h4>
+				</a>
+				<p>Adds an alias that you can alternatively use to execute the command.</p>
+				<a href="#commandsethidden--hidden--boolean-" id="commandsethidden--hidden--boolean-" style="color: inherit; text-decoration: none;">
+					<h4>Command#setHidden ( hidden? : boolean )</h4>
+				</a>
+				<p>Makes the command hidden from the built-in help command.</p>
+				<a href="#commandsetowneronly--owner--boolean-" id="commandsetowneronly--owner--boolean-" style="color: inherit; text-decoration: none;">
+					<h4>Command#setOwnerOnly ( owner? : boolean )</h4>
+				</a>
+				<p>Makes the command only accessible to the bot owner.</p>
+				<a href="#commandsetguildonly--guild--boolean-" id="commandsetguildonly--guild--boolean-" style="color: inherit; text-decoration: none;">
+					<h4>Command#setGuildOnly ( guild? : boolean )</h4>
+				</a>
+				<p>Makes the command only accessible from a server/guild (cannot be ran in a DM).</p>
+				<a href="#commandsetdmonly--dm--boolean-" id="commandsetdmonly--dm--boolean-" style="color: inherit; text-decoration: none;">
+					<h4>Command#setDMOnly ( dm? : boolean )</h4>
+				</a>
+				<p>Makes the command only accessible from DMs.</p>
+				<a href="#commandsetnsfw--nsfw--boolean-" id="commandsetnsfw--nsfw--boolean-" style="color: inherit; text-decoration: none;">
+					<h4>Command#setNSFW ( nsfw? : boolean )</h4>
+				</a>
+				<p>Makes the command only accessible in NSFW channels or DMs.</p>
+				<a href="#commandadduserpermission--perm--permissionresolvable-" id="commandadduserpermission--perm--permissionresolvable-" style="color: inherit; text-decoration: none;">
+					<h4>Command#addUserPermission ( perm : PermissionResolvable )</h4>
+				</a>
+				<p>Adds a permission that the user executing the command must have.</p>
+				<a href="#commandaddclientpermission--perm--permissionresolvable-" id="commandaddclientpermission--perm--permissionresolvable-" style="color: inherit; text-decoration: none;">
+					<h4>Command#addClientPermission ( perm : PermissionResolvable )</h4>
+				</a>
+				<p>Adds a permission that the client requires to run the command.</p>
+				<a href="#commandsetusercooldown--time--number-" id="commandsetusercooldown--time--number-" style="color: inherit; text-decoration: none;">
+					<h4>Command#setUserCooldown ( time : number )</h4>
+				</a>
+				<p>Makes a per-user cooldown to the command. If above 0, then a user can only run it once every <code>time</code>ms.</p>
+				<a href="#commandsetglobalcooldown--time--number-" id="commandsetglobalcooldown--time--number-" style="color: inherit; text-decoration: none;">
+					<h4>Command#setGlobalCooldown ( time : number )</h4>
+				</a>
+				<p><code>Command#setUserCooldown()</code>, but global instead of per-user.</p>
+				<a href="#commandruncommand--message--message-client--client-" id="commandruncommand--message--message-client--client-" style="color: inherit; text-decoration: none;">
+					<h4>Command#runCommand ( message : Message, client : Client )</h4>
+				</a>
+				<p>Runs the command. Not recommended to run without <code>System#parseMessage()</code>.</p>
+				<a href="#simplecommand--name--string-cfunction--message-message-content-string-gt-any---extends-command" id="simplecommand--name--string-cfunction--message-message-content-string-gt-any---extends-command" style="color: inherit; text-decoration: none;">
+					<h3>SimpleCommand ( name : string, cfunction : (message: Message, content: string) =&gt; any ) | extends Command</h3>
+				</a>
+				<p>The <code>Command</code> class, but the output of <code>cfunction</code> will be sent back as a message.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_classes_command_.html">&quot;classes/<wbr>Command&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_classes_simplecommand_.html">&quot;classes/<wbr>Simple<wbr>Command&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_classes_system_.html">&quot;classes/<wbr>System&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_defaultcommands_.html">&quot;default<wbr>Commands&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_index_.html">&quot;index&quot;</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
