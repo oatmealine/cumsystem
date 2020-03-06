@@ -24,14 +24,14 @@ function parseUser(bot : Discord.Client, parse : string, guild? : Discord.Guild)
 		}
 
 		if (guild) {
-			let users = guild.members.cache.filter(u => u.nickname !== null && u.nickname.toLowerCase().startsWith(parse.toLowerCase()));
+			let users = guild.members.cache.filter(u => u.nickname !== null && u.nickname?.toLowerCase().startsWith(parse.toLowerCase()));
 			if (users.size > 0) {
 				let user = users.first();
 				if (user)
 					return user.user;
 			}
 
-			users = guild.members.cache.filter(u => u.nickname !== null && u.nickname.toLowerCase() === parse.toLowerCase());
+			users = guild.members.cache.filter(u => u.nickname !== null && u.nickname?.toLowerCase() === parse.toLowerCase());
 			if (users.size > 0) {
 				let user = users.first();
 				if (user)
