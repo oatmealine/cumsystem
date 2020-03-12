@@ -24,7 +24,7 @@ export class System {
 	 /** The ID of the bot owner */
 	public ownerID: string | undefined;
 	
-	private setValues: any; 
+	private setValues: any = {}; 
 
 	 /**
 	 * Makes a new command system with no commands except the default commands (ping, help)
