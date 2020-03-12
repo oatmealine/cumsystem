@@ -22,7 +22,9 @@ export class System {
   private application: Discord.ClientApplication | undefined;
 
 	 /** The ID of the bot owner */
-  public ownerID: string | undefined;
+	public ownerID: string | undefined;
+	
+	private setValues: any; 
 
 	 /**
 	 * Makes a new command system with no commands except the default commands (ping, help)
@@ -37,7 +39,7 @@ export class System {
 	 * @param {Discord.Client} client The client of the command system
 	 * @param {string} prefix The prefix to use for command detection
 	 */
-  constructor(client: Discord.Client, prefix: string) {
+	constructor(client: Discord.Client, prefix: string) {
   	this.client = client;
   	this.prefix = prefix;
 
@@ -53,9 +55,9 @@ export class System {
   					process.emitWarning('Couldn\'t fetch owner id from the client\'s application');
   			});
   	});
-  }
+	}
 
-  /**
+	/**
    * Add a command to the commands list
 	 * @example
 	 * ```typescript
@@ -66,36 +68,54 @@ export class System {
    * @param {string} category The name of the category to use
    * @param {Command} command The command itself
    */
-  public addCommand(category: string, command: Command): void {
+	public addCommand(category: string, command: Command): void {
   	if (!this.commands[category]) {
   		this.commands[category] = [];
   	}
 
   	this.commands[category][command.name] = command;
-  }
+	}
 
-  /**
+	/**
    * Sets a client for the command system to use
    * @param {Discord.Client} clientSet The client
    */
-  public setClient(clientSet: Discord.Client) {
+	public setClient(clientSet: Discord.Client) {
   	this.client = clientSet;
-  }
+	}
 
-  /**
+	/**
    * Sets a prefix for the command system to use
    * @param {string} prefixSet The prefix
    */
-  public setPrefix(prefixSet: string) {
+	public setPrefix(prefixSet: string) {
   	this.prefix = prefixSet;
-  }
+	}
 
-  /**
+	/**
+	 * Set a key to a value in the system (useful for passing values through modules without directly passing them to the function)
+	 * @param {string} key
+	 * @param {any} value
+	 */
+	public set(key: string, value: any): any {
+		this.setValues[key] = value;
+		return value;
+	}
+
+	/**
+	 * Get a value from a key in the system
+	 * @param {string} key
+	 */
+	public get(key: string): any {
+		return this.setValues[key];
+	}
+
+	/**
    * Parses messages, recommended to put in your client message listener
    * @param {Discord.Message} message The message
    * @param {string} prefixOverride A prefix override to use instead of the default one, useful for custom prefixes
    */
-  public parseMessage(message: Discord.Message, prefixOverride?: string) {
+	public parseMessage(message: Discord.Message, prefixOverride?: string) {
   	let content: string = message.content;
 
   	let thisPrefix: string = this.prefix;
@@ -118,5 +138,5 @@ export class System {
   			}); 
   		});
   	}
-  }
+	}
 }
