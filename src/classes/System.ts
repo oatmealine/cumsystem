@@ -2,6 +2,7 @@ import * as Discord from 'discord.js';
 import { Command } from './Command';
 
 import { addCommands } from '../defaultCommands';
+import { EventEmitter } from 'events';
 
 Discord; // eslint bein a DUMBASS
 Command;
@@ -9,7 +10,7 @@ Command;
 /**
  * Represents the commands and options of a single bot
  */
-export class System {
+export class System extends EventEmitter {
 	 /** The prefix used for detecting commands */
 	public prefix: string = '!';
 	 /** The client of the command system */
@@ -40,7 +41,9 @@ export class System {
 	 * @param {string} prefix The prefix to use for command detection
 	 */
 	constructor(client: Discord.Client, prefix: string) {
-  	this.client = client;
+		super();
+		
+		this.client = client;
   	this.prefix = prefix;
 
   	addCommands(this);
@@ -54,7 +57,7 @@ export class System {
   				if (!this.ownerID)
   					process.emitWarning('Couldn\'t fetch owner id from the client\'s application');
   			});
-  	});
+		});
 	}
 
 	/**

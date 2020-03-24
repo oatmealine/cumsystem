@@ -81,25 +81,32 @@
 				<a href="#example" id="example" style="color: inherit; text-decoration: none;">
 					<h3>Example</h3>
 				</a>
-				<pre><code class="language-ts"><span class="hljs-keyword">const</span> Discord = <span class="hljs-built_in">require</span>(<span class="hljs-string">'discord.js'</span>);
-<span class="hljs-keyword">const</span> CommandSystem = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cumsystem'</span>);
+				<pre><code class="language-js"><span class="hljs-keyword">const</span> Discord = <span class="hljs-built_in">require</span>(<span class="hljs-string">'discord.js'</span>);
+<span class="hljs-keyword">const</span> CommandSystem = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./cumsystem'</span>);
 
 <span class="hljs-keyword">let</span> client = <span class="hljs-keyword">new</span> Discord.Client();
-<span class="hljs-keyword">let</span> cs = <span class="hljs-keyword">new</span> CommandSystem.System(client, <span class="hljs-string">'!'</span>); <span class="hljs-comment">// set the prefix</span>
+<span class="hljs-keyword">let</span> cs = <span class="hljs-keyword">new</span> CommandSystem.System(client, <span class="hljs-string">'!'</span>);
 
-client.on(<span class="hljs-string">'message'</span>, <span class="hljs-function"><span class="hljs-params">m</span> =&gt;</span> cs.parseMessage(m)); <span class="hljs-comment">// arrow functions are required!!!!</span>
-client.on(<span class="hljs-string">'ready'</span>, <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'ready!'</span>));
+client.on(<span class="hljs-string">'message'</span>, m =&gt; cs.parseMessage(m));
+client.on(<span class="hljs-string">'ready'</span>, () =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'ready!'</span>));
 
-cs.addCommand(<span class="hljs-string">'core'</span>, <span class="hljs-keyword">new</span> CommandSystem.SimpleCommand(<span class="hljs-string">'hi'</span>, <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+cs.on(<span class="hljs-string">'error'</span>, (err, msg, cmd) =&gt; {
+    <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`got error while running <span class="hljs-subst">${cmd.name}</span>:`</span>);
+    <span class="hljs-built_in">console</span>.error(err);
+
+    msg.channel.send(<span class="hljs-string">`got error!: <span class="hljs-subst">${err}</span>\nyou should report this to the developer!`</span>);
+})
+
+cs.addCommand(<span class="hljs-string">'core'</span>, <span class="hljs-keyword">new</span> CommandSystem.SimpleCommand(<span class="hljs-string">'hi'</span>, () =&gt; {
   <span class="hljs-keyword">return</span> <span class="hljs-string">'hello!'</span>;
 })
   .setDescription(<span class="hljs-string">'says hello back'</span>));
 
-cs.addCommand(<span class="hljs-string">'core'</span>, <span class="hljs-keyword">new</span> CommandSystem.SimpleCommand(<span class="hljs-string">'say'</span>, <span class="hljs-function">(<span class="hljs-params">msg, bot, content</span>) =&gt;</span> {
+cs.addCommand(<span class="hljs-string">'core'</span>, <span class="hljs-keyword">new</span> CommandSystem.SimpleCommand(<span class="hljs-string">'say'</span>, (msg, content) =&gt; {
   <span class="hljs-keyword">return</span> content;
 })
   .setDescription(<span class="hljs-string">'says whatever you tell it to say'</span>)
-  .setOwnerOnly());
+    .setOwnerOnly());
 
 client.login(token);</code></pre>
 				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">

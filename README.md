@@ -24,27 +24,34 @@ import * as CommandSystem from 'cumsystem';
 
 ### Example
 
-```ts
+```js
 const Discord = require('discord.js');
-const CommandSystem = require('cumsystem');
+const CommandSystem = require('./cumsystem');
 
 let client = new Discord.Client();
-let cs = new CommandSystem.System(client, '!'); // set the prefix
+let cs = new CommandSystem.System(client, '!');
 
-client.on('message', m => cs.parseMessage(m)); // arrow functions are required!!!!
+client.on('message', m => cs.parseMessage(m));
 client.on('ready', () => console.log('ready!'));
+
+cs.on('error', (err, msg, cmd) => {
+	console.error(`got error while running ${cmd.name}:`);
+	console.error(err);
+
+	msg.channel.send(`got error!: ${err}\nyou should report this to the developer!`);
+})
 
 cs.addCommand('core', new CommandSystem.SimpleCommand('hi', () => {
   return 'hello!';
 })
   .setDescription('says hello back'));
 
-cs.addCommand('core', new CommandSystem.SimpleCommand('say', (msg, bot, content) => {
+cs.addCommand('core', new CommandSystem.SimpleCommand('say', (msg, content) => {
   return content;
 })
   .setDescription('says whatever you tell it to say')
-  .setOwnerOnly());
-
+	.setOwnerOnly());
+	
 client.login(token);
 ```
 

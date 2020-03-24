@@ -493,6 +493,10 @@ export class Command {
 			}
 		}
 
-		return this.cfunc(message, params.join(' '));
+		try {
+			return this.cfunc(message, params.join(' '));
+		} catch(err) {
+			system.emit('error', err, message, this);
+		}
 	}
 }
