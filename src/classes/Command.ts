@@ -494,7 +494,12 @@ export class Command {
 		}
 
 		try {
-			return this.cfunc(message, params.join(' '));
+			let commandRan = this.cfunc(message, params.join(' '));
+			if (commandRan.catch) {
+				commandRan.catch((err: Error) => {
+					system.emit('error', err, message, this);
+				});
+			}
 		} catch(err) {
 			system.emit('error', err, message, this);
 		}
