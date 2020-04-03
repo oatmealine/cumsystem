@@ -495,8 +495,9 @@ export class Command {
 
 		try {
 			let commandRan = this.cfunc(message, params.join(' '));
-			if (commandRan && commandRan.catch) {
-				commandRan.catch((err: Error) => {
+
+			if (commandRan !== null && commandRan.then) {
+				commandRan.then(() => {}).catch((err: Error) => {
 					system.emit('error', err, message, this);
 				});
 			}
