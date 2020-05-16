@@ -48,7 +48,7 @@ export function addCommands(cs: CommandSystem.System) {
 
 				embed.addField('Commands', categoryCommands.map(c => c.name).join('\n'));
 
-				return embed;
+				return {embed};
 			}
 		} else {
 			const embed = new Discord.MessageEmbed()
@@ -73,7 +73,7 @@ export function addCommands(cs: CommandSystem.System) {
 						`\`${commands.map((c: CommandSystem.Command) => c.name.toLowerCase()).join('`, `')}\``);
 			});
 
-			return embed;
+			return {embed};
 		}
 	})
 		.setCategory('core')

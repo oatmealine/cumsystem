@@ -427,8 +427,8 @@ export class Command {
 		if (this.clientPermissions.length > 0 && message.guild) {
 			const missingpermissions: Discord.PermissionResolvable[] = [];
 
-			this.clientPermissions.forEach((perm) => {
-				if (message.guild !== null && message.guild.me !== null && !message.guild.me.hasPermission(perm)) {
+			this.clientPermissions.forEach((perm) => {				
+				if (message.guild && message.guild.me && !message.guild.me.hasPermission(perm)) {
 					missingpermissions.push(perm);
 				}
 			});
@@ -463,24 +463,6 @@ export class Command {
 				// check for no nsfw tag in topic
 				if (message.channel.topic !== null && message.channel.topic.includes('[no_nsfw]'))
 					return message.channel.send('This command needs to be ran in an NSFW channel, but this channel has a [no_nsfw] tag in the topic.');
-			}
-		}
-		
-		// cooldowns
-
-		if (this.userCooldown > 0 && !owner) {
-			if (this.userCooldowns[message.author.id] === undefined || Date.now() - this.userCooldowns[message.author.id] > 0) {
-				this.userCooldowns[message.author.id] = this.userCooldown;
-			} else {
-				return message.react('⏱️');
-			}
-		}
-
-		if (this.globalCooldown > 0 && !owner) {
-			if ((Date.now() - this.globalCooldowns) > 0) {
-				this.globalCooldowns = Date.now() + this.globalCooldown;
-			} else {
-				return message.react('⏱️');
 			}
 		}
 
@@ -524,7 +506,25 @@ export class Command {
 				return message.channel.send(`Invalid syntax! \`${this.name+' '+this.displayUsage}\``);
 			}
 		}
-		
+
+		// cooldowns
+
+		if (this.userCooldown > 0 && !owner) {
+			if (this.userCooldowns[message.author.id] === undefined || Date.now() - this.userCooldowns[message.author.id] > 0) {
+				this.userCooldowns[message.author.id] = this.userCooldown;
+			} else {
+				return message.react('⏱️');
+			}
+		}
+
+		if (this.globalCooldown > 0 && !owner) {
+			if ((Date.now() - this.globalCooldowns) > 0) {
+				this.globalCooldowns = Date.now() + this.globalCooldown;
+			} else {
+				return message.react('⏱️');
+			}
+		}
+
 		// then run the command
 
 		try {

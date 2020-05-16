@@ -41,16 +41,18 @@ cs.on('error', (err, msg, cmd) => {
 	msg.channel.send(`got error!: ${err}\nyou should report this to the developer!`);
 })
 
-cs.addCommand('core', new CommandSystem.SimpleCommand('hi', () => {
+cs.addCommand(new CommandSystem.SimpleCommand('hi', () => {
   return 'hello!';
 })
+	.setCategory('core')
   .setDescription('says hello back'));
 
-cs.addCommand('core', new CommandSystem.SimpleCommand('say', (msg, content) => {
+cs.addCommand(new CommandSystem.SimpleCommand('say', (msg, content) => {
   return content;
 })
+	.setCategory('core')
   .setDescription('says whatever you tell it to say')
-	.setOwnerOnly());
+  .setOwnerOnly());
 	
 client.login(token);
 ```
