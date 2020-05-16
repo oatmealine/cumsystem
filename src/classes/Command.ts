@@ -288,6 +288,9 @@ export class Command {
 	 */
 	public setDMOnly(needs?: boolean) : Command {
 		this.needsDM = needs === undefined ? true : needs;
+
+		this.needsGuild = !this.needsDM;
+
 		return this;
 	}
 
@@ -298,6 +301,9 @@ export class Command {
 	 */
 	public setGuildOnly(needs?: boolean) : Command {
 		this.needsGuild = needs === undefined ? true : needs;
+
+		this.needsDM = !this.needsGuild;
+
 		return this;
 	}
 
@@ -332,6 +338,7 @@ export class Command {
 		} else {
 			process.emitWarning(`Unknown permission: ${perm}`);
 		}
+
 		return this;
 	}
 
@@ -346,6 +353,7 @@ export class Command {
 		} else {
 			process.emitWarning(`Unknown permission: ${perm}`);
 		}
+		
 		return this;
 	}
 
