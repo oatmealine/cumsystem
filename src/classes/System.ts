@@ -20,7 +20,7 @@ export class System extends EventEmitter {
   public commands: Command[] = [];
 
 	 /** The client application of the client, only used to get the owner ID */
-  private application: Discord.ClientApplication | undefined;
+  public application: Discord.ClientApplication | undefined;
 
 	 /** The ID of the bot owner */
 	public ownerID: string | undefined;
