@@ -403,7 +403,9 @@ export class Command {
 	public runCommand(message: Discord.Message, system: System) {
 		const params = message.content.split(' ').slice(1);
 
-		if (this.ownerOnly && message.author.id !== system.ownerID)
+		let owner = message.author.id === system.ownerID;
+
+		if (this.ownerOnly && !owner)
 			return message.channel.send('This command can only be ran by the owner!');
 
 		if (this.needsGuild && !message.guild)
@@ -424,7 +426,7 @@ export class Command {
 			}
 		}
 		
-		if (this.userCooldown > 0) {
+		if (this.userCooldown > 0 && !owner) {
 			if (this.userCooldowns[message.author.id] === undefined || Date.now() - this.userCooldowns[message.author.id] > 0) {
 				this.userCooldowns[message.author.id] = this.userCooldown;
 			} else {
@@ -432,7 +434,7 @@ export class Command {
 			}
 		}
 
-		if (this.globalCooldown > 0) {
+		if (this.globalCooldown > 0 && !owner) {
 			if ((Date.now() - this.globalCooldowns) > 0) {
 				this.globalCooldowns = Date.now() + this.globalCooldown;
 			} else {
@@ -478,7 +480,7 @@ export class Command {
 			}
 		}
 
-		if (this.userPermissions.length > 0 && message.guild && message.author.id !== system.ownerID) {
+		if (this.userPermissions.length > 0 && message.guild) {
 			const missingPermissions: Discord.PermissionResolvable[] = [];
 
 			this.userPermissions.forEach((perm) => {
