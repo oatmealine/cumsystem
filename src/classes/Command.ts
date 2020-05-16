@@ -414,6 +414,38 @@ export class Command {
 		if (this.needsDM && message.guild)
 			return message.channel.send('This command needs to be ran in a DM!');
 
+		// permission checking
+
+		if (this.clientPermissions.length > 0 && message.guild) {
+			const missingpermissions: Discord.PermissionResolvable[] = [];
+
+			this.clientPermissions.forEach((perm) => {
+				if (message.guild !== null && message.guild.me !== null && !message.guild.me.hasPermission(perm)) {
+					missingpermissions.push(perm);
+				}
+			});
+
+			if (missingpermissions.length > 0) {
+				return message.channel.send(`**I can't run this command!** This bot need these permissions to run this command: \`${missingpermissions.join(', ')}\``);
+			}
+		}
+
+		if (this.userPermissions.length > 0 && message.guild) {
+			const missingPermissions: Discord.PermissionResolvable[] = [];
+
+			this.userPermissions.forEach((perm) => {
+				if (message.member !== null && !message.member.hasPermission(perm)) {
+					missingPermissions.push(perm);
+				}
+			});
+
+			if (missingPermissions.length > 0) {
+				return message.channel.send(`**You can't run this command!** You need these permissions to use this command: \`${missingPermissions.join(', ')}\``);
+			}
+		}
+
+		// nsfw command checking
+
 		if (this.nsfwOnly) {
 			// only check if ran inside a guild
 			if (message.guild && message.channel instanceof Discord.TextChannel) {
@@ -426,6 +458,8 @@ export class Command {
 			}
 		}
 		
+		// cooldowns
+
 		if (this.userCooldown > 0 && !owner) {
 			if (this.userCooldowns[message.author.id] === undefined || Date.now() - this.userCooldowns[message.author.id] > 0) {
 				this.userCooldowns[message.author.id] = this.userCooldown;
@@ -441,6 +475,9 @@ export class Command {
 				return message.react('⏱️');
 			}
 		}
+
+		// argument checking
+		// TODO: redo this entire thing. like the entire thing
 
 		let argumentsValid: boolean[] = [];
 
@@ -479,34 +516,8 @@ export class Command {
 				return message.channel.send(`Invalid syntax! \`${this.name+' '+this.displayUsage}\``);
 			}
 		}
-
-		if (this.userPermissions.length > 0 && message.guild) {
-			const missingPermissions: Discord.PermissionResolvable[] = [];
-
-			this.userPermissions.forEach((perm) => {
-				if (message.member !== null && !message.member.hasPermission(perm)) {
-					missingPermissions.push(perm);
-				}
-			});
-
-			if (missingPermissions.length > 0) {
-				return message.channel.send(`**You can't run this command!** You need these permissions to use this command: \`${missingPermissions.join(', ')}\``);
-			}
-		}
-
-		if (this.clientPermissions.length > 0 && message.guild) {
-			const missingpermissions: Discord.PermissionResolvable[] = [];
-
-			this.clientPermissions.forEach((perm) => {
-				if (message.guild !== null && message.guild.me !== null && !message.guild.me.hasPermission(perm)) {
-					missingpermissions.push(perm);
-				}
-			});
-
-			if (missingpermissions.length > 0) {
-				return message.channel.send(`**I can't run this command!** This bot need these permissions to run this command: \`${missingpermissions.join(', ')}\``);
-			}
-		}
+		
+		// then run the command
 
 		try {
 			this.cfunc(message, params.join(' '));
