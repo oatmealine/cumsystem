@@ -16,8 +16,8 @@ export class System extends EventEmitter {
 	 /** The client of the command system */
   public client: Discord.Client;
 
-	 /** An object of categories, each containing commands */
-  public commands: any = {};
+	 /** An array of commands */
+  public commands: Command[] = [];
 
 	 /** The client application of the client, only used to get the owner ID */
   private application: Discord.ClientApplication | undefined;
@@ -64,19 +64,14 @@ export class System extends EventEmitter {
    * Add a command to the commands list
 	 * @example
 	 * ```typescript
-	 * cs.addCommand('core', new CommandSystem.SimpleCommand('hi', () => {
+	 * cs.addCommand(new CommandSystem.SimpleCommand('hi', () => {
    *   return 'hello!';
 	 * }));
 	 * ```
-   * @param {string} category The name of the category to use
    * @param {Command} command The command itself
    */
-	public addCommand(category: string, command: Command): void {
-  	if (!this.commands[category]) {
-  		this.commands[category] = [];
-  	}
-
-  	this.commands[category][command.name] = command;
+	public addCommand(command: Command): void {
+		this.commands.push(command);
 	}
 
 	/**
@@ -130,15 +125,12 @@ export class System extends EventEmitter {
   		content = content.slice(content.startsWith(thisPrefix) ? thisPrefix.length : this.prefix.length, content.length);
   		const cmd = content.split(' ')[0];
 
-  		//@ts-ignore
-  		Object.values(this.commands).forEach((cat: object) => {
-  			Object.values(cat).forEach((command) => {
-  				if ((command['name'] === cmd || command['aliases'].includes(cmd))) {					
-  					if (((message.content.startsWith(thisPrefix) || (message.content.startsWith(this.prefix) && command['ignorePrefix'])) || (thisPrefix == this.prefix))) {
-  						command['runCommand'](message, this);
-  					}
+  		this.commands.forEach((command: Command) => {
+				if (command.name === cmd || command.aliases.includes(cmd)) {					
+  				if ((message.content.startsWith(thisPrefix) || (message.content.startsWith(this.prefix) && command['ignorePrefix'])) || (thisPrefix == this.prefix)) {
+  					command.runCommand(message, this);
   				}
-  			}); 
+  			}
   		});
   	}
 	}

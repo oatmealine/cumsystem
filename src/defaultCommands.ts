@@ -8,32 +8,25 @@ function grammar(str: string) : string {
 }
 
 export function addCommands(cs: CommandSystem.System) {
-	cs.addCommand('core', new CommandSystem.SimpleCommand('help', (message) => {
+	cs.addCommand(new CommandSystem.SimpleCommand('help', (message) => {
 		const params = message.content.split(' ');
 
 		if (params[1]) {
 			let command: CommandSystem.Command;
-			let categoryName = '';
 
-			// ts is being stupid
-			// @ts-ignore
-			Object.values(cs.commands).forEach((category: object, i) => {
+			cs.commands.forEach(cmd => {
 				if (command) { return; }
 
-				categoryName = Object.keys(cs.commands)[i];
-
-				Object.values(category).forEach((cmd: CommandSystem.Command) => {
-					if (cmd.name === params[1] || cmd.aliases.includes(params[1])) {
-						command = cmd;
-					}
-				});
+				if (cmd.name === params[1] || cmd.aliases.includes(params[1])) {
+					command = cmd;
+				}
 			});
 
-			// ts is being stupid
+			// hey TS MAYBE IF YOU READ THE BEFORE CODE YOU WOULD KNOW IT WOULD BE ASSIGNED OR NOT AND IT CHECKS HERE IF IT IS ?????
 			// @ts-ignore
 			if (command) {
 				let embed = new Discord.MessageEmbed()
-					.setTitle(`**${grammar(command.name)}** (${grammar(categoryName)})`)
+					.setTitle(`**${grammar(command.name)}** (${grammar(command.category)})`)
 					.addField('Usage', cs.prefix + command.name + ' ' + command.displayUsage)
 					.setDescription(command.description)
 					.setColor(Math.floor(Math.random() * 16777215));
@@ -45,37 +38,17 @@ export function addCommands(cs: CommandSystem.System) {
 
 				return {embed};
 			} else {
-				let category: object;
-				let categoryName = '';
+				let categoryCommands: CommandSystem.Command[] = cs.commands.filter(c => c.category === params[1].toLowerCase());
 
-				// ts is being stupid
-				// @ts-ignore
-				Object.values(cs.commands).forEach((cat: object, i) => {
-					if (category) { return; }
+				if (categoryCommands.length === 0) return `Command or category \`${params[1]}\` not found!`;
 
-					categoryName = Object.keys(cs.commands)[i];
-					if (categoryName === params[1].toLowerCase()) { category = cat; }
-				});
+				const embed = new Discord.MessageEmbed()
+					.setTitle(`**${grammar(params[1].toLowerCase())}** [${categoryCommands.length}]`)
+					.setColor(Math.floor(Math.random() * 16777215));
 
-				// ts is being stupid
-				// @ts-ignore
-				if (category) {
-					const embed = new Discord.MessageEmbed()
-						.setTitle(`**${grammar(categoryName)}** [${Object.keys(category).length}]`)
-						.setColor(Math.floor(Math.random() * 16777215));
+				embed.addField('Commands', categoryCommands.map(c => c.name).join('\n'));
 
-					const commands: string[] = [];
-
-					Object.values(category).forEach((cmd: CommandSystem.Command) => {
-						if (!cmd.hidden) { commands.push('`' + cmd.name + '` - ' + cmd.description.split('\n')[0]); }
-					});
-
-					if (commands.length !== 0) embed.addField('Commands', commands.join('\n'));
-
-					return {embed};
-				} else {
-					return `Command or category \`${params[1]}\` not found!`;
-				}
+				return embed;
 			}
 		} else {
 			const embed = new Discord.MessageEmbed()
@@ -83,34 +56,40 @@ export function addCommands(cs: CommandSystem.System) {
 				.setColor(Math.floor(Math.random() * 16777215))
 				.setFooter('Do help (category) to get all commands for a category!');
 
-			// ts is being stupid
-			// @ts-ignore
-			Object.values(cs.commands).forEach((category: object, i) => {
-				const categoryName = Object.keys(cs.commands)[i];
-				const commands: string[] = [];
+			let categorizedCommands: any = {};
 
-				Object.values(category).forEach((cmd: CommandSystem.Command) => {
-					if (!cmd.hidden) commands.push(cmd.name);
-				});
-
-				if (commands.length !== 0) embed.addField(`${grammar(categoryName)} [${commands.length}]`, '`' + commands.join('`, `') + '`');
+			cs.commands.forEach(command => {
+				if (!command.hidden) {
+					if (!categorizedCommands[command.category]) categorizedCommands[command.category] = [];
+					categorizedCommands[command.category].push(command);
+				}
 			});
 
-			return {embed};
+			Object.keys(categorizedCommands).forEach(cat => {
+				let commands = categorizedCommands[cat];
+
+				if (commands.length !== 0)
+					embed.addField(`${grammar(cat)} [${commands.length}]`,
+						`\`${commands.map((c: CommandSystem.Command) => c.name.toLowerCase()).join('`, `')}\``);
+			});
+
+			return embed;
 		}
 	})
+		.setCategory('core')
 		.setUsage('[string]')
 		.setIgnorePrefix()
 		.addAlias('cmds')
 		.addClientPermission('EMBED_LINKS')
 		.setDescription('see commands, or check out a comnmand in detail'));
 
-	cs.addCommand('core', new CommandSystem.Command('ping', (message) => {
+	cs.addCommand(new CommandSystem.Command('ping', (message) => {
 		const dateStart = Date.now();
     
 		message.channel.send('hol up').then(m => {
 			m.edit(`Message latency: ${Date.now() - dateStart}ms\nWebsocket ping: ${message.client.ws.ping}ms`);
 		});
 	})
+		.setCategory('core')
 		.setDescription('ping the bot'));
 }

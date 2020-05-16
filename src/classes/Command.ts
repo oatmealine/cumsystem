@@ -73,6 +73,8 @@ export class Command {
 	public cfunc: (message: Discord.Message, content: string) => any | undefined;
 	/** A description of the command; shows up in the help command */
 	public description: string;
+	/** The category the command belongs in */
+	public category: string;
 
 	/** The usage of the command. Used for checking the syntax */
 	public usage: string;
@@ -126,6 +128,7 @@ export class Command {
 	constructor(name : string, cfunction : (message: Discord.Message, content: string) => any | null) {
 		this.name = name;
 		this.cfunc = cfunction;
+		this.category = 'uncategorized';
 		this.usage = '';
 		this.displayUsage = '';
 		this.clientPermissions = [];
@@ -245,6 +248,16 @@ export class Command {
 	 */
 	public setDescription(desc? : string) : Command {
 		this.description = desc === undefined ? 'No description provided' : desc;
+		return this;
+	}
+	
+	/**
+	 * Sets the command's category, display only
+	 * @param {string} category the category, leave empty to remove
+	 * @returns {Command} Itself
+	 */
+	public setCategory(category? : string) : Command {
+		this.category = category?.toLowerCase() || 'uncategorized';
 		return this;
 	}
 
