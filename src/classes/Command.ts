@@ -142,7 +142,7 @@ export class Command {
 		this.ownerOnly = false;
 		this.nsfwOnly = false;
 
-		this.description = 'No description provided';
+		this.description = '';
 
 		this.aliases = [];
 		this.examples = [];
